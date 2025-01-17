@@ -61,13 +61,30 @@ def posToSpherical(p: vector):
   sAngle = sphericalAngle(lr, ud)
   return sAngle
 
-def sphericalToFrame(angle: sphericalAngle):
-  p = sphericalToPos(angle)
+def frameToPos(angle: frameAngle):
+  x = -math.sin(angle.innerRadians())
+  y = math.cos(angle.innerRadians())*math.sin(angle.outerRadians())
+  z = math.cos(angle.innerRadians())*math.cos(angle.outerRadians())
+  p = vector(x, y, z)
+  return p
+  
+def posToFrame(p: vector):
   outerAngle = math.degrees(math.atan(p.getY()/p.getZ()))
   yzhypothenuse = math.sqrt(p.getY()*p.getY()+p.getZ()*p.getZ())
   innerAngle = math.degrees(math.atan(-p.getX()/yzhypothenuse))
   fAngle = frameAngle(outerAngle, innerAngle)
   return fAngle
+
+def sphericalToFrame(angle: sphericalAngle):
+  p = sphericalToPos(angle)
+  fAngle = posToFrame(p)
+  return fAngle
+
+def frameToSpherical(angle: frameAngle):
+  p = frameToPos(angle)
+  sAngle = posToSpherical(p)
+  return sAngle
+
 
 def calculateTrajectory(angle, x): # angle in degrees, calculates y value of a point on trajectory given x value 
   angleRad = math.radians(angle)
@@ -114,12 +131,18 @@ waterSpeed = 500
 
 camera1Pos = vector(7, -10, 1) # change later 
 camera2Pos = vector(-7, -10, 1) # change later 
+camera1Tilt = 0 # degrees
+camera2Tilt = 0 # degrees
 
 currentAngle = sphericalAngle(0, 0)
 
 #Main firing sequence
 
 #Detect position code here
+#Get position vector from camera
+#convert to frame angle
+#add tilt
+#convert back to position
 target = vector(5, 7, 120)
 rotateToFireAtPosition(target)
 
