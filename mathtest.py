@@ -31,13 +31,13 @@ class vector:
     return f"({self.getX()}, {self.getY()}, {self.getZ()})"
 
 class sphericalAngle: #angles in degrees
-  def __init__(self, a, b):
-    self.a = a
-    self.b = b
-  def aRadians(self):
-    return math.radians(self.a)
-  def bRadians(self):
-    return math.radians(self.b)
+  def __init__(self, lr, ud):
+    self.lr = lr
+    self.ud = ud
+  def lrRadians(self):
+    return math.radians(self.lr)
+  def udRadians(self):
+    return math.radians(self.ud)
 
 class frameAngle: #angles in degrees 
   def __init__(self, outer, inner):
@@ -50,29 +50,47 @@ class frameAngle: #angles in degrees
 
 currentAngle = sphericalAngle(0, 0)
 
-def sphericalToXYZ(angle: sphericalAngle): #return normalized positiion
-  x = -math.cos(angle.bRadians())*math.sin(angle.aRadians())
-  y = math.sin(angle.bRadians())
-  z = math.cos(angle.bRadians())*math.cos(angle.aRadians())
+def sphericalToPos(angle: sphericalAngle): #return normalized positiion
+  x = -math.cos(angle.udRadians())*math.sin(angle.lrRadians())
+  y = math.sin(angle.udRadians())
+  z = math.cos(angle.udRadians())*math.cos(angle.lrRadians())
   p = vector(x, y, z)
   return p
 
+def posToSpherical(p: vector):
+  lr = math.degrees(math.atan(-p.getX()/p.getZ()))
+  xzhypothenuse = math.sqrt(p.getX()*p.getX()+p.getZ()*p.getZ())
+  ud = math.degrees(math.atan(p.getY()/xzhypothenuse))
+  sAngle = sphericalAngle(lr, ud)
+  return sAngle
+
 def sphericalToFrame(angle: sphericalAngle):
-  p = sphericalToXYZ(angle)
+  p = sphericalToPos(angle)
   outerAngle = math.degrees(math.atan(p.getY()/p.getZ()))
   yzhypothenuse = math.sqrt(p.getY()*p.getY()+p.getZ()*p.getZ())
   innerAngle = math.degrees(math.atan(-p.getX()/yzhypothenuse))
   fAngle = frameAngle(outerAngle, innerAngle)
   return fAngle
 
+def rotateToAngle(fAngle: frameAngle):
+  return 0;
+
+def rotateToFireAtPosition(pos: vector):
+  lr = math.degrees(math.atan(-pos.getX()/pos.getZ()))
+  ud = 0
+  sAngle = sphericalAngle(lr, ud)
+  fAngle = sphericalToFrame(sAngle);
+
 g = 981 #cm/s^2
 camera1Pos = vector(7, -10, 1) # change later 
 camera2Pos = vector(-7, -10, 1) # change later 
 
+currentAngle = sphericalAngle(0, 0)
+
 
 testA = sphericalAngle(40, 60)
-print(testA.a)
-v = sphericalToXYZ(testA)
+print(testA.lr)
+v = sphericalToPos(testA)
 print(v)
 sA = sphericalToFrame(testA)
 print(sA.outerAngle)
