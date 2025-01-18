@@ -2,7 +2,7 @@ import math
 import numpy as np
 from numpy import array, cross
 from numpy.linalg import solve, norm
-import imagedetection
+#import imagedetection
 
 
 #All distances in centimeters, origin is center of rotation 
@@ -167,6 +167,9 @@ lCamPos = vector(-7, -10, 1) # change later
 rCamTilt = 10.93 # degrees
 lCamTilt = 10.16 # degrees
 
+rCamSlopePerPixel = 0.001600
+lCamSlopePerPixel = 0.001600
+
 maxLeft = 40 # degrees
 maxRight = -40 # degrees
 
@@ -175,8 +178,9 @@ currentAngle = frameAngle(0, 0)
 #Main firing sequence
 
 #Detect position code here
-rCamreldir = vector(-5, 12, 20)
-lCamreldir = vector(6, -2, 20)
+data = np.array([-50, 80, 30, 70]) #rX, rY, lX, lY
+rCamreldir = vector(data[0]*rCamSlopePerPixel, data[1]*rCamSlopePerPixel, 1)
+lCamreldir = vector(data[2]*rCamSlopePerPixel, data[3]*rCamSlopePerPixel, 1)
 
 rCamfa = posToFrame(rCamreldir)
 rCamfa.outerAngle = rCamfa.outerAngle + rCamTilt

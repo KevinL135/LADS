@@ -31,3 +31,14 @@ for ii in range(10):
     time.sleep(1)
 
 GPIO.cleanup()
+
+def rotateOuterMotor(numSteps): # numSteps = number of steps upwards 
+    GPIO.output(EN_pin,GPIO.LOW) # pull enable to low to enable motor
+    mymotortest.motor_go(False, # False=Clockwise, True=Counterclockwise
+                        "Full" , # Step type (Full,Half,1/4,1/8,1/16,1/32)
+                        numSteps, # number of steps
+                        .0005, # step delay [sec]
+                        False, # True = print verbose output 
+                        .05) # initial delay [sec]
+    time.sleep(0.1)
+    GPIO.cleanup()
