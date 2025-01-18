@@ -2,6 +2,8 @@ import math
 import numpy as np
 from numpy import array, cross
 from numpy.linalg import solve, norm
+import mathtest
+import imagedetection
 
 #All distances in centimeters, origin is center of rotation 
 #Facing the direction of the pressure washer, +x is right, +y is up, +z is forward
@@ -162,8 +164,8 @@ stepAngle = 0.225 # degrees
 
 rCamPos = vector(7, -10, 1) # change later 
 lCamPos = vector(-7, -10, 1) # change later 
-rCamTilt = 0 # degrees
-lCamTilt = 0 # degrees
+rCamTilt = 10.93 # degrees
+lCamTilt = 10.16 # degrees
 
 maxLeft = 40 # degrees
 maxRight = -40 # degrees
@@ -189,16 +191,18 @@ rotateToFireAtPosition(target)
 
 
 #Tests 
+print("Testing")
+# print(mathtest.testing())
+# testA = sphericalAngle(40, 60)
+# print(testA.lr)
+# v = sphericalToPos(testA)
+# print(v)
+# sA = sphericalToFrame(testA)
+# print(sA.outerAngle)
+# print(sA.innerAngle)
+# print(calculateTrajectory(40, 120))
+# print(estimateAngle(120, 145))
 
-testA = sphericalAngle(40, 60)
-print(testA.lr)
-v = sphericalToPos(testA)
-print(v)
-sA = sphericalToFrame(testA)
-print(sA.outerAngle)
-print(sA.innerAngle)
-print(calculateTrajectory(40, 120))
-print(estimateAngle(120, 145))
-
-print("Intersection test")
-print(findIntersection(vector(0, 0, 2), vector(3, 4, 0), vector(4, 0, 0), vector(0, 3, 2)))
+# print("Intersection test")
+# print(findIntersection(vector(0, 0, 2), vector(3, 4, 0), vector(4, 0, 0), vector(0, 3, 2)))
+print(imagedetection.camerasGetTargetPixel()[0])

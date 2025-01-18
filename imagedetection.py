@@ -74,3 +74,32 @@ while True:
 cap.release()
 cv2.destroyAllWindows()
 
+def camerasGetTargetPixel():
+
+    frame0=cam0.capture_array()
+    frame0=cv2.resize(frame0,(width,height))
+
+    obj_width_in_frame0=obj_data(frame0)
+    if obj_width_in_frame0[0] != 0:
+        x=obj_width_in_frame0[0]
+        y=obj_width_in_frame0[1]
+        cv2.putText(frame0, f"Position: {x}, {y}", (30, 35),cv2.FONT_HERSHEY_COMPLEX, 0.6, (255,0,0), 2)
+
+    frame1=cam1.capture_array()
+    frame1=cv2.resize(frame1,(width,height))
+    #cv2.line(frame1, (centerx,centery), (centerx,centery), (0, 255, 0), 10) 
+    #cv2.line(frame1, (pointx, pointy), (pointx, pointy), (0, 0, 255), 10) 
+    obj_width_in_frame1=obj_data(frame1)
+    if obj_width_in_frame1[0] != 0:
+        x=obj_width_in_frame1[0]
+        y=obj_width_in_frame1[1]
+        cv2.putText(frame1, f"Position: {x}, {y}", (30, 35),cv2.FONT_HERSHEY_COMPLEX, 0.6, (255,0,0), 2)
+
+
+    # cv2.imshow("Right",frame0)
+    # cv2.imshow("Left",frame1)
+    # if cv2.waitKey(1)&0xFF==27:
+    #     break
+    # cap.release()
+    # cv2.destroyAllWindows()
+    return np.array([height, width])

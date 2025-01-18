@@ -8,6 +8,12 @@ from numpy.linalg import solve, norm
 #For spherical coordinates, (0,0) is forwards, a rotates ccw around the +y axis, and b rotates ccw around the +x axis
 #Arrays are x, y, z
 
+avar = 5
+
+
+def testing():
+  return avar
+
 class vector:
   def __init__(self, x, y, z):
     self.arr = np.array([x, y, z])
