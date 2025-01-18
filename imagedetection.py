@@ -102,4 +102,4 @@ def camerasGetTargetPixel():
     #     break
     # cap.release()
     # cv2.destroyAllWindows()
-    return np.array([height, width])
+    return height

@@ -2,8 +2,8 @@ import math
 import numpy as np
 from numpy import array, cross
 from numpy.linalg import solve, norm
-import mathtest
 import imagedetection
+
 
 #All distances in centimeters, origin is center of rotation 
 #Facing the direction of the pressure washer, +x is right, +y is up, +z is forward
@@ -205,4 +205,4 @@ print("Testing")
 
 # print("Intersection test")
 # print(findIntersection(vector(0, 0, 2), vector(3, 4, 0), vector(4, 0, 0), vector(0, 3, 2)))
-print(imagedetection.camerasGetTargetPixel()[0])
+print(imagedetection.camerasGetTargetPixel())
