@@ -103,6 +103,8 @@ def estimateAngle(x, y): # returns estimated angle in degrees
 
 def rotateToAngle(sAngle: sphericalAngle):
   fAngle = sphericalToFrame(sAngle);
+  if (fAngle.innerAngle > maxLeft or fAngle.innerAngle < maxRight):
+    raise Exception("Out of bounds")
 
   #Add code
   currentAngle = sAngle
@@ -133,12 +135,19 @@ camera1Pos = vector(7, -10, 1) # change later
 camera2Pos = vector(-7, -10, 1) # change later 
 camera1Tilt = 0 # degrees
 camera2Tilt = 0 # degrees
+maxLeft = 40 # degrees
+maxRight = -40 # degrees
 
 currentAngle = sphericalAngle(0, 0)
 
 #Main firing sequence
 
 #Detect position code here
+camera1reldir = vector(-5, 12, 20)
+c1fa = posToFrame(camera1reldir)
+c1fa.innerAngle = c1fa.innerAngle + camera1Tilt
+camera1direction = frameToPos(c1fa)
+
 #Get position vector from camera
 #convert to frame angle
 #add tilt
