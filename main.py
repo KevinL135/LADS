@@ -101,10 +101,31 @@ def estimateAngle(x, y): # returns estimated angle in degrees
     y1 = calculateTrajectory(a, x)
   return a
 
+def findIntersection(A0: vector, A1: vector, B0: vector, B1: vector):
+
+  # compute unit vectors of directions of lines A and B
+  UA = (A1.getArray() - A0.getArray()) / norm(A1.getArray() - A0.getArray())
+  UB = (B1.getArray() - B0.getArray()) / norm(B1.getArray() - B0.getArray())
+  # find unit direction vector for line C, which is perpendicular to lines A and B
+  UC = cross(UB, UA)
+  UC /= norm(UC)
+
+  # solve the system derived in user2255770's answer from StackExchange: https://math.stackexchange.com/q/1993990
+  RHS = B0.getArray() - A0.getArray()
+  LHS = array([UA, -UB, UC]).T
+  tOutput = solve(LHS, RHS)
+  p1 = A0.getArray() + tOutput[0]*UA
+  p2 = B0.getArray() + tOutput[1]*UB
+  intersection = (p1+p2)/2
+  distanceVector = p1-p2
+  distance = math.sqrt(distanceVector[0]*distanceVector[0] + distanceVector[1]*distanceVector[1] + distanceVector[2]*distanceVector[2])
+  print("Dist: " + str(distance))
+  return vector(intersection[0], intersection[1], intersection[2])
+
 def rotateToAngle(sAngle: sphericalAngle):
   fAngle = sphericalToFrame(sAngle);
-  if (fAngle.innerAngle > maxLeft or fAngle.innerAngle < maxRight):
-    raise Exception("Out of bounds")
+  # if (fAngle.innerAngle > maxLeft or fAngle.innerAngle < maxRight):
+  #   raise Exception("Out of bounds")
 
   #Add code
   currentAngle = sAngle
@@ -131,10 +152,11 @@ g = 981 # cm/s^2
 pivotToTip = 50
 waterSpeed = 500
 
-camera1Pos = vector(7, -10, 1) # change later 
-camera2Pos = vector(-7, -10, 1) # change later 
-camera1Tilt = 0 # degrees
-camera2Tilt = 0 # degrees
+rCamPos = vector(7, -10, 1) # change later 
+lCamPos = vector(-7, -10, 1) # change later 
+rCamTilt = 0 # degrees
+lCamTilt = 0 # degrees
+
 maxLeft = 40 # degrees
 maxRight = -40 # degrees
 
@@ -143,16 +165,18 @@ currentAngle = sphericalAngle(0, 0)
 #Main firing sequence
 
 #Detect position code here
-camera1reldir = vector(-5, 12, 20)
-c1fa = posToFrame(camera1reldir)
-c1fa.innerAngle = c1fa.innerAngle + camera1Tilt
-camera1direction = frameToPos(c1fa)
+rCamreldir = vector(-5, 12, 20)
+lCamreldir = vector(6, -2, 20)
 
-#Get position vector from camera
-#convert to frame angle
-#add tilt
-#convert back to position
-target = vector(5, 7, 120)
+rCamfa = posToFrame(rCamreldir)
+rCamfa.innerAngle = rCamfa.innerAngle + rCamTilt
+rCamDirection = frameToPos(rCamfa)
+
+lCamfa = posToFrame(lCamreldir)
+lCamfa.innerAngle = lCamfa.innerAngle + lCamTilt
+lCamDirection = frameToPos(lCamfa)
+
+target = findIntersection(rCamPos, rCamPos+rCamDirection, lCamPos, lCamPos+lCamDirection)
 rotateToFireAtPosition(target)
 
 
@@ -167,3 +191,6 @@ print(sA.outerAngle)
 print(sA.innerAngle)
 print(calculateTrajectory(40, 120))
 print(estimateAngle(120, 145))
+
+print("Intersection test")
+print(findIntersection(vector(0, 0, 2), vector(3, 4, 0), vector(4, 0, 0), vector(0, 3, 2)))
