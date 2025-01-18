@@ -45,7 +45,9 @@ class frameAngle: #angles in degrees
     return math.radians(self.outerAngle)
   def innerRadians(self):
     return math.radians(self.innerAngle)
-
+  
+def arrayToVector(array: np.array):
+  return vector(array[0], array[1], array[2])
 
 def sphericalToPos(angle: sphericalAngle): #return normalized positiion
   x = -math.cos(angle.udRadians())*math.sin(angle.lrRadians())
@@ -122,13 +124,18 @@ def findIntersection(A0: vector, A1: vector, B0: vector, B1: vector):
   print("Dist: " + str(distance))
   return vector(intersection[0], intersection[1], intersection[2])
 
-def rotateToAngle(sAngle: sphericalAngle):
-  fAngle = sphericalToFrame(sAngle);
+def rotateToAngle(fAngle: frameAngle):
   # if (fAngle.innerAngle > maxLeft or fAngle.innerAngle < maxRight):
-  #   raise Exception("Out of bounds")
+  # raise Exception("Out of bounds")
+  outerSteps = round(fAngle.outerAngle/stepAngle)
+  outerStepAngle = outerSteps*stepAngle
+  innerSteps = round(fAngle.innerAngle/stepAngle)
+  innerStepAngle = innerSteps*stepAngle
 
   #Add code
-  currentAngle = sAngle
+  global currentAngle
+  currentAngle = frameAngle(outerStepAngle, innerStepAngle) 
+  print("Rotated to <" + str(currentAngle.outerAngle) + ", " + str(currentAngle.innerAngle) + ">")
 
 def fire():
   #Add code
@@ -139,7 +146,7 @@ def rotateToFireAtPosition(pos: vector):
   groundDistance = math.sqrt(pos.getX()*pos.getX()+pos.getZ()*pos.getZ())
   ud = estimateAngle(groundDistance, pos.getY())
   sAngle = sphericalAngle(lr, ud)
-  rotateToAngle(sAngle)
+  rotateToAngle(sphericalToFrame(sAngle))
 
   input("Press the Enter key to fire") 
   fire()
@@ -151,6 +158,7 @@ def pointToPosition(pos: vector):
 g = 981 # cm/s^2
 pivotToTip = 50
 waterSpeed = 500
+stepAngle = 0.225 # degrees 
 
 rCamPos = vector(7, -10, 1) # change later 
 lCamPos = vector(-7, -10, 1) # change later 
@@ -160,7 +168,7 @@ lCamTilt = 0 # degrees
 maxLeft = 40 # degrees
 maxRight = -40 # degrees
 
-currentAngle = sphericalAngle(0, 0)
+currentAngle = frameAngle(0, 0)
 
 #Main firing sequence
 
@@ -169,14 +177,14 @@ rCamreldir = vector(-5, 12, 20)
 lCamreldir = vector(6, -2, 20)
 
 rCamfa = posToFrame(rCamreldir)
-rCamfa.innerAngle = rCamfa.innerAngle + rCamTilt
+rCamfa.outerAngle = rCamfa.outerAngle + rCamTilt
 rCamDirection = frameToPos(rCamfa)
 
 lCamfa = posToFrame(lCamreldir)
-lCamfa.innerAngle = lCamfa.innerAngle + lCamTilt
+lCamfa.outerAngle = lCamfa.outerAngle + lCamTilt
 lCamDirection = frameToPos(lCamfa)
 
-target = findIntersection(rCamPos, rCamPos+rCamDirection, lCamPos, lCamPos+lCamDirection)
+target = findIntersection(rCamPos, arrayToVector(rCamPos.getArray()+rCamDirection.getArray()), lCamPos, arrayToVector(lCamPos.getArray()+lCamDirection.getArray()))
 rotateToFireAtPosition(target)
 
 
