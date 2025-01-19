@@ -2,6 +2,8 @@ import math
 import numpy as np
 from numpy import array, cross
 from numpy.linalg import solve, norm
+from picamera2 import Picamera2
+import cv2
 #import imagedetection
 
 
@@ -156,6 +158,24 @@ def rotateToFireAtPosition(pos: vector):
 def pointToPosition(pos: vector):
   sAngle = posToSpherical(pos)
   rotateToAngle(sAngle)
+  
+def obj_data(img):
+     obj_pos = (0,0)
+     hsv=cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
+     mask=cv2.inRange(hsv,lower_range,upper_range)
+     _,mask1=cv2.threshold(mask,254,255,cv2.THRESH_BINARY)
+     cnts,_=cv2.findContours(mask1,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
+     for c in cnts:
+        x=400
+        if cv2.contourArea(c)>x:
+            x,y,w,h=cv2.boundingRect(c)
+            centerx = (int) (x+w/2)
+            centery = (int) (y+h/2)
+            cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
+            cv2.rectangle(img,(centerx,centery),(centerx,centery),(0,0,255),5)
+            obj_pos = (x,y)
+
+     return obj_pos
 
 g = 981 # cm/s^2
 pivotToTip = 50
@@ -175,23 +195,76 @@ maxRight = -40 # degrees
 
 currentAngle = frameAngle(0, 0)
 
-#Main firing sequence
+lower_range=np.array([33,80,149])#color detection ranges
+upper_range=np.array([179,255,255])
 
-#Detect position code here
-data = np.array([-50, 80, 30, 70]) #rX, rY, lX, lY
-rCamreldir = vector(data[0]*rCamSlopePerPixel, data[1]*rCamSlopePerPixel, 1)
-lCamreldir = vector(data[2]*rCamSlopePerPixel, data[3]*rCamSlopePerPixel, 1)
+cam0 = Picamera2(0)
+cam1 = Picamera2(1)
 
-rCamfa = posToFrame(rCamreldir)
-rCamfa.outerAngle = rCamfa.outerAngle + rCamTilt
-rCamDirection = frameToPos(rCamfa)
+height = 600
+width = 800
+middle = (int(width / 2), int(height / 2))
+cam0.configure(cam0.create_video_configuration(main={"format": 'RGB888', "size": (width, height)}))
+cam0.start()
+cam1.configure(cam0.create_video_configuration(main={"format": 'RGB888', "size": (width, height)}))
+cam1.start()
+    
+while True:
+    width = 800
+    height= 600
+    
+    pointx = 400
+    pointy = 100
+    
+    centerx = 400
+    centery = 300
+    frame0=cam0.capture_array()
+    frame0=cv2.resize(frame0,(width,height))
+    cv2.line(frame0, (pointx, pointy), (pointx, pointy), (0, 0, 255), 10) 
+    cv2.line(frame0, (centerx,centery), (centerx,centery), (0, 255, 0), 10) 
+    obj_width_in_frame0=obj_data(frame0)
+    
+    frame1=cam1.capture_array()
+    frame1=cv2.resize(frame1,(width,height))
+    cv2.line(frame1, (centerx,centery), (centerx,centery), (0, 255, 0), 10) 
+    cv2.line(frame1, (pointx, pointy), (pointx, pointy), (0, 0, 255), 10) 
+    obj_width_in_frame1=obj_data(frame1)
+    if (obj_width_in_frame1[0] != 0 ) and (obj_width_in_frame0[0] != 0 ):
+        x=obj_width_in_frame0[0]
+        y=obj_width_in_frame0[1]
+        cv2.putText(frame0, f"Position: {x}, {y}", (30, 35),cv2.FONT_HERSHEY_COMPLEX, 0.6, (255,0,0), 2)
+        x=obj_width_in_frame1[0]
+        y=obj_width_in_frame1[1]
+        cv2.putText(frame1, f"Position: {x}, {y}", (30, 35),cv2.FONT_HERSHEY_COMPLEX, 0.6, (255,0,0), 2)
+        
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+        
+            #Main firing sequence
 
-lCamfa = posToFrame(lCamreldir)
-lCamfa.outerAngle = lCamfa.outerAngle + lCamTilt
-lCamDirection = frameToPos(lCamfa)
+            #Detect position code here
+            rCamreldir = vector((obj_width_in_frame0[0]-centerx)*rCamSlopePerPixel, (obj_width_in_frame0[1]-centery)*rCamSlopePerPixel, 1)
+            lCamreldir = vector((obj_width_in_frame1[0]-centerx)*rCamSlopePerPixel, (obj_width_in_frame1[1]-centery)q*rCamSlopePerPixel, 1)
 
-target = findIntersection(rCamPos, arrayToVector(rCamPos.getArray()+rCamDirection.getArray()), lCamPos, arrayToVector(lCamPos.getArray()+lCamDirection.getArray()))
-rotateToFireAtPosition(target)
+            rCamfa = posToFrame(rCamreldir)
+            rCamfa.outerAngle = rCamfa.outerAngle + rCamTilt
+            rCamDirection = frameToPos(rCamfa)
+            print(rCamDirection)
+
+            lCamfa = posToFrame(lCamreldir)
+            lCamfa.outerAngle = lCamfa.outerAngle + lCamTilt
+            lCamDirection = frameToPos(lCamfa)
+            print(lCamDirection)
+
+            target = findIntersection(rCamPos, arrayToVector(rCamPos.getArray()+rCamDirection.getArray()), lCamPos, arrayToVector(lCamPos.getArray()+lCamDirection.getArray()))
+            rotateToFireAtPosition(target)
+    cv2.imshow("Right",frame0)
+    cv2.imshow("Left",frame1)
+    cv2.moveWindow("frame0",50,100)
+    cv2.moveWindow("frame1",50,900)
+    if cv2.waitKey(1)&0xFF==27:
+        break
+
+cv2.destroyAllWindows()
 
 
 #Tests 
