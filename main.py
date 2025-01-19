@@ -247,8 +247,8 @@ lCamPos = vector(-7.05, -11.3, 1.7) # change later
 rCamTilt = 10.93 # degrees
 lCamTilt = 10.16 # degrees
 
-rCamSlopePerPixel = 0.001600
-lCamSlopePerPixel = 0.001600
+rCamSlopePerPixel = 0.001500
+lCamSlopePerPixel = 0.001500
 
 maxLeft = 40 # degrees
 maxRight = -40 # degrees
