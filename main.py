@@ -150,21 +150,28 @@ def findIntersection(A0: vector, A1: vector, B0: vector, B1: vector):
 
 def rotateToAngle(fAngle: frameAngle):
   # if (fAngle.innerAngle > maxLeft or fAngle.innerAngle < maxRight):
-  # raise Exception("Out of bounds")
-  outerSteps = round(fAngle.outerAngle/stepAngle)
-  outerStepAngle = outerSteps*stepAngle
-  innerSteps = round(fAngle.innerAngle/stepAngle)
-  innerStepAngle = innerSteps*stepAngle
+  #   raise Exception("Out of bounds")
+  targetOuterSteps = round(fAngle.outerAngle/stepAngle)
+  outerStepAngle = targetOuterSteps*stepAngle
+  targetInnerSteps = round(fAngle.innerAngle/stepAngle)
+  innerStepAngle = targetInnerSteps*stepAngle
+
+  currentOuterSteps = round(currentAngle.outerAngle/stepAngle)
+  currentInnerSteps = round(currentAngle.innerAngle/stepAngle)
+
+  deltaOuterSteps = targetOuterSteps - currentOuterSteps
+  deltaInnerSteps = targetInnerSteps - currentInnerSteps
+
   outerMotor.motor_go(False, # False=Clockwise, True=Counterclockwise
                          "Full" , # Step type (Full,Half,1/4,1/8,1/16,1/32)
-                         outerSteps, # number of steps
+                         deltaOuterSteps, # number of steps
                         .0005, # step delay [sec]
                          False, # True = print verbose output 
                          .005) # initial delay [sec]
 
   innerMotor.motor_go(False, # False=Clockwise, True=Counterclockwise
                          "Full" , # Step type (Full,Half,1/4,1/8,1/16,1/32)
-                         innerSteps, # number of steps
+                         deltaInnerSteps, # number of steps
                         .0005, # step delay [sec]
                          False, # True = print verbose output 
                          .005) # initial delay [sec]
