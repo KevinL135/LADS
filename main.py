@@ -308,8 +308,8 @@ while True:
             #Main firing sequence
 
             #Detect position code hererCamreldir = vector((obj_width_in_frame0[0]-centerx)*rCamSlopePerPixel, (obj_width_in_frame0[1]-centery)*rCamSlopePerPixel, 1)
-            lCamreldir = vector((obj_width_in_frame1[0]-centerx)*lCamSlopePerPixel, (obj_width_in_frame1[1]-centery)*lCamSlopePerPixel, 1)
-            rCamreldir = vector((obj_width_in_frame0[0]-centerx)*rCamSlopePerPixel, (obj_width_in_frame0[1]-centery)*rCamSlopePerPixel, 1)
+            lCamreldir = vector((obj_width_in_frame1[0]-centerx)*lCamSlopePerPixel, (-(obj_width_in_frame1[1]-centery))*lCamSlopePerPixel, 1)
+            rCamreldir = vector((obj_width_in_frame0[0]-centerx)*rCamSlopePerPixel, (-(obj_width_in_frame0[1]-centery))*rCamSlopePerPixel, 1)
 
 
             rCamfa = posToFrame(rCamreldir)
