@@ -149,7 +149,7 @@ def findIntersection(A0: vector, A1: vector, B0: vector, B1: vector):
   intersection = (p1+p2)/2
   distanceVector = p1-p2
   distance = math.sqrt(distanceVector[0]*distanceVector[0] + distanceVector[1]*distanceVector[1] + distanceVector[2]*distanceVector[2])
-  print("Dist: " + str(distance))
+  print("Gap: " + str(distance))
   return vector(intersection[0], intersection[1], intersection[2])
 
 def parabolicAngle(pos:vector):
@@ -178,21 +178,31 @@ def rotateToAngle(fAngle: frameAngle):
   deltaOuterSteps = targetOuterSteps - currentOuterSteps
   deltaInnerSteps = targetInnerSteps - currentInnerSteps
 
-  print(deltaOuterSteps)
-  print(deltaInnerSteps)
+  outerDirection = False
+  if (deltaOuterSteps < 0):
+    deltaOuterSteps = -deltaOuterSteps
+    outerDirection = not outerDirection 
+
+  innerDirection = False
+  if (deltaInnerSteps < 0):
+    deltaInnerSteps = -deltaInnerSteps
+    innerDirection = not innerDirection 
+
+  print("Outer Steps: " + str(deltaOuterSteps))
+  print("Inner Steps: " + str(deltaInnerSteps))
 
   outerMotor.motor_go(deltaOuterSteps>0, # False=Clockwise, True=Counterclockwise
                          "Full" , # Step type (Full,Half,1/4,1/8,1/16,1/32)
                         0, # number of steps
                         .0005, # step delay [sec]
-                         False, # True = print verbose output 
+                         outerDirection, # True = print verbose output 
                          0) # initial delay [sec]
 
   innerMotor.motor_go(deltaInnerSteps>0, # False=Clockwise, True=Counterclockwise
                          "Full" , # Step type (Full,Half,1/4,1/8,1/16,1/32)
                          abs(deltaInnerSteps)*5, # number of steps
                         .0005, # step delay [sec]
-                         False, # True = print verbose output 
+                         innerDirection, # True = print verbose output 
                          0) # initial delay [sec]
   
   currentAngle = frameAngle(outerStepAngle, innerStepAngle) 
@@ -203,8 +213,8 @@ def fire():
   print("Fired")
 
 def rotateToFireAtPosition(pos: vector):
-  sAngle = directAngle(pos)
-  rotateToAngle(sphericalToFrame(sAngle))
+  aimAngle = directAngle(pos)
+  rotateToAngle(sphericalToFrame(aimAngle))
   input("Press the Enter key to fire") 
   fire()
 
@@ -237,8 +247,8 @@ lCamPos = vector(-7.05, -11.3, 1.7) # change later
 rCamTilt = 10.93 # degrees
 lCamTilt = 10.16 # degrees
 
-rCamSlopePerPixel = 0.001600
-lCamSlopePerPixel = 0.001600
+rCamSlopePerPixel = 0.001500
+lCamSlopePerPixel = 0.001500
 
 maxLeft = 40 # degrees
 maxRight = -40 # degrees
@@ -305,12 +315,12 @@ while True:
             rCamfa = posToFrame(rCamreldir)
             rCamfa.outerAngle = rCamfa.outerAngle + rCamTilt
             rCamDirection = frameToPos(rCamfa)
-            print(rCamDirection)
+            print("Right Cam Direction:" + str(rCamDirection))
 
             lCamfa = posToFrame(lCamreldir)
             lCamfa.outerAngle = lCamfa.outerAngle + lCamTilt
             lCamDirection = frameToPos(lCamfa)
-            print(lCamDirection)
+            print("Right Cam Direction:" + str(lCamDirection))
 
             target = findIntersection(rCamPos, arrayToVector(rCamPos.getArray()+rCamDirection.getArray()), lCamPos, arrayToVector(lCamPos.getArray()+lCamDirection.getArray()))
             print(target)
