@@ -178,7 +178,7 @@ def rotateToAngle(fAngle: frameAngle):
   deltaOuterSteps = targetOuterSteps - currentOuterSteps
   deltaInnerSteps = targetInnerSteps - currentInnerSteps
 
-  outerDirection = False
+  outerDirection = True
   if (deltaOuterSteps < 0):
     deltaOuterSteps = -deltaOuterSteps
     outerDirection = not outerDirection 
@@ -191,19 +191,19 @@ def rotateToAngle(fAngle: frameAngle):
   print("Outer Steps: " + str(deltaOuterSteps))
   print("Inner Steps: " + str(deltaInnerSteps))
 
-  outerMotor.motor_go(deltaOuterSteps>0, # False=Clockwise, True=Counterclockwise
+  outerMotor.motor_go(outerDirection, # False=Clockwise, True=Counterclockwise
                          "Full" , # Step type (Full,Half,1/4,1/8,1/16,1/32)
-                        0, # number of steps
+                        deltaOuterSteps*5, # number of steps
                         .0005, # step delay [sec]
-                         outerDirection, # True = print verbose output 
-                         0) # initial delay [sec]
+                         True, # True = print verbose output 
+                         0.1) # initial delay [sec]
 
-  innerMotor.motor_go(deltaInnerSteps>0, # False=Clockwise, True=Counterclockwise
+  innerMotor.motor_go(innerDirection, # False=Clockwise, True=Counterclockwise
                          "Full" , # Step type (Full,Half,1/4,1/8,1/16,1/32)
-                         abs(deltaInnerSteps)*5, # number of steps
+                         deltaInnerSteps*5, # number of steps
                         .0005, # step delay [sec]
-                         innerDirection, # True = print verbose output 
-                         0) # initial delay [sec]
+                         True, # True = print verbose output 
+                         0.1) # initial delay [sec]
   
   currentAngle = frameAngle(outerStepAngle, innerStepAngle) 
   print("Rotated to <" + str(currentAngle.outerAngle) + ", " + str(currentAngle.innerAngle) + ">")
@@ -215,8 +215,8 @@ def fire():
 def rotateToFireAtPosition(pos: vector):
   aimAngle = directAngle(pos)
   rotateToAngle(sphericalToFrame(aimAngle))
-  input("Press the Enter key to fire") 
-  fire()
+  if cv2.waitKey(1) & 0xFF == ord('f'):
+      fire()
 
 
 def obj_data(img):
