@@ -12,8 +12,8 @@ cam0.configure(cam0.create_video_configuration(main={"format": 'RGB888', "size":
 cam0.start()
 cam1.configure(cam0.create_video_configuration(main={"format": 'RGB888', "size": (width, height)}))
 cam1.start()
-lower_range=np.array([0,125,229])
-upper_range=np.array([27,255,255])
+lower_range=np.array([0,74,178])
+upper_range=np.array([179,255,255])
 
 Known_distance=1
 Known_width=1
@@ -38,6 +38,10 @@ def obj_data(img):
      return obj_pos
     
 # while True:
+<<<<<<< Updated upstream
+=======
+#     print("yo")
+>>>>>>> Stashed changes
 #     width = 800
 #     height= 600
 #     
@@ -71,8 +75,13 @@ def obj_data(img):
 #     cv2.imshow("Left",frame1)
 #     if cv2.waitKey(1)&0xFF==27:
 #         break
+<<<<<<< Updated upstream
 
 cv2.destroyAllWindows()
+=======
+# cap.release()
+# cv2.destroyAllWindows()
+>>>>>>> Stashed changes
 
 def camerasGetTargetPixel():
 

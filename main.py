@@ -30,7 +30,6 @@ GPIO.setup(en2,GPIO.OUT) # set enable pin as output
 GPIO.output(EN_pin,GPIO.LOW) # pull enable to low to enable motor
 GPIO.output(en2,GPIO.LOW) # pull enable to low to enable motor
 
-
 #All distances in centimeters, origin is center of rotation 
 #Facing the direction of the pressure washer, +x is right, +y is up, +z is forward
 #For spherical coordinates, (0,0) is forwards, a rotates ccw around the +y axis, and b rotates ccw around the +x axis
@@ -114,7 +113,6 @@ def frameToSpherical(angle: frameAngle):
   p = frameToPos(angle)
   sAngle = posToSpherical(p)
   return sAngle
-
 
 def calculateTrajectory(angle, x): # angle in degrees, calculates y value of a point on trajectory given x value 
   angleRad = math.radians(angle)
@@ -242,7 +240,7 @@ def obj_data(img):
 g = 981 # cm/s^2
 pivotToTip = 50
 waterSpeed = 500
-stepAngle = 0.225 # degrees 
+stepAngle = 0.225 # degrees
 
 rCamPos = vector(6.9, -11.3, 1.7) # change later 
 lCamPos = vector(-7.05, -11.3, 1.7) # change later 
@@ -254,6 +252,7 @@ lCamSlopePerPixel = 0.001500
 
 maxLeft = 40 # degrees
 maxRight = -40 # degrees
+print("test")
 
 currentAngle = frameAngle(0, 0)
 
@@ -313,6 +312,7 @@ while True:
             lCamreldir = vector((obj_width_in_frame1[0]-centerx)*lCamSlopePerPixel, (-(obj_width_in_frame1[1]-centery))*lCamSlopePerPixel, 1)
             rCamreldir = vector((obj_width_in_frame0[0]-centerx)*rCamSlopePerPixel, (-(obj_width_in_frame0[1]-centery))*rCamSlopePerPixel, 1)
 
+<<<<<<< Updated upstream
 
             rCamfa = posToFrame(rCamreldir)
             rCamfa.outerAngle = rCamfa.outerAngle + rCamTilt
@@ -335,6 +335,11 @@ while True:
         break
 
 cv2.destroyAllWindows()
+=======
+target = findIntersection(rCamPos, arrayToVector(rCamPos.getArray()+rCamDirection.getArray()), lCamPos, arrayToVector(lCamPos.getArray()+lCamDirection.getArray()))
+
+rotateToFireAtPosition(target)
+>>>>>>> Stashed changes
 
 
 #Tests 
