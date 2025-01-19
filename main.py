@@ -152,6 +152,17 @@ def findIntersection(A0: vector, A1: vector, B0: vector, B1: vector):
   print("Dist: " + str(distance))
   return vector(intersection[0], intersection[1], intersection[2])
 
+def parabolicAngle(pos:vector):
+  lr = math.degrees(math.atan(-pos.getX()/pos.getZ()))
+  groundDistance = math.sqrt(pos.getX()*pos.getX()+pos.getZ()*pos.getZ())
+  ud = estimateAngle(groundDistance, pos.getY())
+  sAngle = sphericalAngle(lr, ud)
+  return sAngle
+
+def directAngle(pos: vector):
+  sAngle = posToSpherical(pos)
+  return sAngle  
+
 def rotateToAngle(fAngle: frameAngle):
   # if (fAngle.innerAngle > maxLeft or fAngle.innerAngle < maxRight):
   #   raise Exception("Out of bounds")
@@ -166,6 +177,9 @@ def rotateToAngle(fAngle: frameAngle):
 
   deltaOuterSteps = targetOuterSteps - currentOuterSteps
   deltaInnerSteps = targetInnerSteps - currentInnerSteps
+
+  print(deltaOuterSteps)
+  print(deltaInnerSteps)
 
   outerMotor.motor_go(False, # False=Clockwise, True=Counterclockwise
                          "Full" , # Step type (Full,Half,1/4,1/8,1/16,1/32)
@@ -189,19 +203,12 @@ def fire():
   print("Fired")
 
 def rotateToFireAtPosition(pos: vector):
-  lr = math.degrees(math.atan(-pos.getX()/pos.getZ()))
-  groundDistance = math.sqrt(pos.getX()*pos.getX()+pos.getZ()*pos.getZ())
-  ud = estimateAngle(groundDistance, pos.getY())
-  sAngle = sphericalAngle(lr, ud)
+  sAngle = directAngle(pos)
   rotateToAngle(sphericalToFrame(sAngle))
-
   input("Press the Enter key to fire") 
   fire()
 
-def pointToPosition(pos: vector):
-  sAngle = posToSpherical(pos)
-  rotateToAngle(sAngle)
-  
+
 def obj_data(img):
      obj_pos = (0,0)
      hsv=cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
@@ -328,4 +335,3 @@ print("Testing")
 
 # print("Intersection test")
 # print(findIntersection(vector(0, 0, 2), vector(3, 4, 0), vector(4, 0, 0), vector(0, 3, 2)))
-print(imagedetection.camerasGetTargetPixel())
