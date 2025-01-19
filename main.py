@@ -178,7 +178,7 @@ def rotateToAngle(fAngle: frameAngle):
   deltaOuterSteps = targetOuterSteps - currentOuterSteps
   deltaInnerSteps = targetInnerSteps - currentInnerSteps
 
-  outerDirection = True
+  outerDirection = False
   if (deltaOuterSteps < 0):
     deltaOuterSteps = -deltaOuterSteps
     outerDirection = not outerDirection 
@@ -193,15 +193,15 @@ def rotateToAngle(fAngle: frameAngle):
 
   outerMotor.motor_go(outerDirection, # False=Clockwise, True=Counterclockwise
                          "Full" , # Step type (Full,Half,1/4,1/8,1/16,1/32)
-                        deltaOuterSteps*5, # number of steps
-                        .0005, # step delay [sec]
+                        110, # number of steps
+                        .0003, # step delay [sec]
                          True, # True = print verbose output 
                          0.1) # initial delay [sec]
 
   innerMotor.motor_go(innerDirection, # False=Clockwise, True=Counterclockwise
                          "Full" , # Step type (Full,Half,1/4,1/8,1/16,1/32)
-                         deltaInnerSteps*5, # number of steps
-                        .0005, # step delay [sec]
+                         0, # number of steps
+                        .0003, # step delay [sec]
                          True, # True = print verbose output 
                          0.1) # initial delay [sec]
   
@@ -215,8 +215,10 @@ def fire():
 def rotateToFireAtPosition(pos: vector):
   aimAngle = directAngle(pos)
   rotateToAngle(sphericalToFrame(aimAngle))
-  if cv2.waitKey(1) & 0xFF == ord('f'):
-      fire()
+  while True:
+      if cv2.waitKey(1) & 0xFF == ord('f'):
+          fire()
+          break
 
 
 def obj_data(img):
@@ -226,8 +228,8 @@ def obj_data(img):
      _,mask1=cv2.threshold(mask,254,255,cv2.THRESH_BINARY)
      cnts,_=cv2.findContours(mask1,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
      for c in cnts:
-        x=400
-        if cv2.contourArea(c)>x:
+        colorBoundary=100
+        if cv2.contourArea(c)>colorBoundary:
             x,y,w,h=cv2.boundingRect(c)
             centerx = (int) (x+w/2)
             centery = (int) (y+h/2)
@@ -255,8 +257,8 @@ maxRight = -40 # degrees
 
 currentAngle = frameAngle(0, 0)
 
-lower_range=np.array([51,38,216])#color detection ranges
-upper_range=np.array([91,255,255])
+lower_range=np.array([0,148,189])#color detection ranges
+upper_range=np.array([179,255,255])
 
 #camera Setup
 cam0 = Picamera2(0)
@@ -284,16 +286,16 @@ while True:
     centery = 300
     frame0=cam0.capture_array()
     frame0=cv2.resize(frame0,(width,height))
-    cv2.line(frame0, (vpointx, vpointy), (vpointx, vpointy), (0, 0, 255), 10) 
-    cv2.line(frame0, (hpointx, hpointy), (hpointx, hpointy), (0, 0, 255), 10) 
-    cv2.line(frame0, (centerx,centery), (centerx,centery), (0, 255, 0), 10) 
+    cv2.line(frame0, (vpointx, vpointy), (vpointx, vpointy), (255, 255, 255), 10) 
+    cv2.line(frame0, (hpointx, hpointy), (hpointx, hpointy), (255, 255, 255), 10) 
+    cv2.line(frame0, (centerx,centery), (centerx,centery), (255, 255, 255), 10) 
     obj_width_in_frame0=obj_data(frame0)
     
     frame1=cam1.capture_array()
     frame1=cv2.resize(frame1,(width,height))
-    cv2.line(frame1, (vpointx, vpointy), (vpointx, vpointy), (0, 0, 255), 10) 
-    cv2.line(frame1, (hpointx, hpointy), (hpointx, hpointy), (0, 0, 255), 10) 
-    cv2.line(frame1, (centerx,centery), (centerx,centery), (0, 255, 0), 10) 
+    cv2.line(frame1, (vpointx, vpointy), (vpointx, vpointy), (255, 255, 255), 10) 
+    cv2.line(frame1, (hpointx, hpointy), (hpointx, hpointy), (255, 255, 255), 10) 
+    cv2.line(frame1, (centerx,centery), (centerx,centery), (255, 255, 255), 10) 
     obj_width_in_frame1=obj_data(frame1)
     if (obj_width_in_frame1[0] != 0 ) and (obj_width_in_frame0[0] != 0 ):
         x=obj_width_in_frame0[0]
