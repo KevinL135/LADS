@@ -21,10 +21,10 @@ step2 = 17
 en2 = 22
 
 # Declare a instance of class pass GPIO pins numbers and the motor type
-outerMotor = RpiMotorLib.A4988Nema(direction, step, (21,21,21), "DRV8825")
+innerMotor = RpiMotorLib.A4988Nema(direction, step, (21,21,21), "DRV8825")
 GPIO.setup(EN_pin,GPIO.OUT) # set enable pin as output
 
-innerMotor = RpiMotorLib.A4988Nema(dir2, step2, (21,21,21), "DRV8825")
+outerMotor = RpiMotorLib.A4988Nema(dir2, step2, (21,21,21), "DRV8825")
 GPIO.setup(en2,GPIO.OUT) # set enable pin as output
 
 GPIO.output(EN_pin,GPIO.LOW) # pull enable to low to enable motor
@@ -181,16 +181,16 @@ def rotateToAngle(fAngle: frameAngle):
   print(deltaOuterSteps)
   print(deltaInnerSteps)
 
-  outerMotor.motor_go(False, # False=Clockwise, True=Counterclockwise
+  outerMotor.motor_go(deltaOuterSteps>0, # False=Clockwise, True=Counterclockwise
                          "Full" , # Step type (Full,Half,1/4,1/8,1/16,1/32)
-                         deltaOuterSteps, # number of steps
+                        0, # number of steps
                         .0005, # step delay [sec]
                          False, # True = print verbose output 
                          0) # initial delay [sec]
 
-  innerMotor.motor_go(False, # False=Clockwise, True=Counterclockwise
+  innerMotor.motor_go(deltaInnerSteps>0, # False=Clockwise, True=Counterclockwise
                          "Full" , # Step type (Full,Half,1/4,1/8,1/16,1/32)
-                         deltaInnerSteps, # number of steps
+                         abs(deltaInnerSteps)*5, # number of steps
                         .0005, # step delay [sec]
                          False, # True = print verbose output 
                          0) # initial delay [sec]
@@ -264,21 +264,26 @@ while True:
     width = 800
     height= 600
     
-    pointx = 400
-    pointy = 100
+    hpointx = 400
+    hpointy = 100
+    
+    vpointx = 200
+    vpointy = 300
     
     centerx = 400
     centery = 300
     frame0=cam0.capture_array()
     frame0=cv2.resize(frame0,(width,height))
-    cv2.line(frame0, (pointx, pointy), (pointx, pointy), (0, 0, 255), 10) 
+    cv2.line(frame0, (vpointx, vpointy), (vpointx, vpointy), (0, 0, 255), 10) 
+    cv2.line(frame0, (hpointx, hpointy), (hpointx, hpointy), (0, 0, 255), 10) 
     cv2.line(frame0, (centerx,centery), (centerx,centery), (0, 255, 0), 10) 
     obj_width_in_frame0=obj_data(frame0)
     
     frame1=cam1.capture_array()
     frame1=cv2.resize(frame1,(width,height))
+    cv2.line(frame1, (vpointx, vpointy), (vpointx, vpointy), (0, 0, 255), 10) 
+    cv2.line(frame1, (hpointx, hpointy), (hpointx, hpointy), (0, 0, 255), 10) 
     cv2.line(frame1, (centerx,centery), (centerx,centery), (0, 255, 0), 10) 
-    cv2.line(frame1, (pointx, pointy), (pointx, pointy), (0, 0, 255), 10) 
     obj_width_in_frame1=obj_data(frame1)
     if (obj_width_in_frame1[0] != 0 ) and (obj_width_in_frame0[0] != 0 ):
         x=obj_width_in_frame0[0]
