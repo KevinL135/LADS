@@ -6,6 +6,26 @@ from picamera2 import Picamera2
 import cv2
 #import imagedetection
 
+#motor setup
+#define GPIO pins
+direction= 8 # Direction (DIR) GPIO Pin
+step = 11 # Step GPIO Pin
+EN_pin = 7 # enable pin (LOW to enable)
+
+dir2 = 27
+step2 = 17
+en2 = 22
+
+# Declare a instance of class pass GPIO pins numbers and the motor type
+outerMotor = RpiMotorLib.A4988Nema(direction, step, (21,21,21), "DRV8825")
+GPIO.setup(EN_pin,GPIO.OUT) # set enable pin as output
+
+innterMotor = RpiMotorLib.A4988Nema(dir2, step2, (21,21,21), "DRV8825")
+GPIO.setup(en2,GPIO.OUT) # set enable pin as output
+
+GPIO.output(EN_pin,GPIO.LOW) # pull enable to low to enable motor
+GPIO.output(en2,GPIO.LOW) # pull enable to low to enable motor
+
 
 #All distances in centimeters, origin is center of rotation 
 #Facing the direction of the pressure washer, +x is right, +y is up, +z is forward
@@ -135,8 +155,20 @@ def rotateToAngle(fAngle: frameAngle):
   outerStepAngle = outerSteps*stepAngle
   innerSteps = round(fAngle.innerAngle/stepAngle)
   innerStepAngle = innerSteps*stepAngle
+  outerMotor.motor_go(False, # False=Clockwise, True=Counterclockwise
+                         "Full" , # Step type (Full,Half,1/4,1/8,1/16,1/32)
+                         outerSteps, # number of steps
+                        .0005, # step delay [sec]
+                         False, # True = print verbose output 
+                         .005) # initial delay [sec]
 
-  #Add code
+  innerMotor.motor_go(False, # False=Clockwise, True=Counterclockwise
+                         "Full" , # Step type (Full,Half,1/4,1/8,1/16,1/32)
+                         innerSteps, # number of steps
+                        .0005, # step delay [sec]
+                         False, # True = print verbose output 
+                         .005) # initial delay [sec]
+  
   global currentAngle
   currentAngle = frameAngle(outerStepAngle, innerStepAngle) 
   print("Rotated to <" + str(currentAngle.outerAngle) + ", " + str(currentAngle.innerAngle) + ">")
@@ -198,6 +230,7 @@ currentAngle = frameAngle(0, 0)
 lower_range=np.array([51,38,216])#color detection ranges
 upper_range=np.array([91,255,255])
 
+#camera Setup
 cam0 = Picamera2(0)
 cam1 = Picamera2(1)
 
