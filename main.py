@@ -182,8 +182,8 @@ pivotToTip = 50
 waterSpeed = 500
 stepAngle = 0.225 # degrees 
 
-rCamPos = vector(7, -10, 1) # change later 
-lCamPos = vector(-7, -10, 1) # change later 
+rCamPos = vector(6.9, -11.3, 1.7) # change later 
+lCamPos = vector(-7.05, -11.3, 1.7) # change later 
 rCamTilt = 10.93 # degrees
 lCamTilt = 10.16 # degrees
 
@@ -195,8 +195,8 @@ maxRight = -40 # degrees
 
 currentAngle = frameAngle(0, 0)
 
-lower_range=np.array([33,80,149])#color detection ranges
-upper_range=np.array([179,255,255])
+lower_range=np.array([51,38,216])#color detection ranges
+upper_range=np.array([91,255,255])
 
 cam0 = Picamera2(0)
 cam1 = Picamera2(1)
@@ -241,9 +241,10 @@ while True:
         
             #Main firing sequence
 
-            #Detect position code here
+            #Detect position code hererCamreldir = vector((obj_width_in_frame0[0]-centerx)*rCamSlopePerPixel, (obj_width_in_frame0[1]-centery)*rCamSlopePerPixel, 1)
+            lCamreldir = vector((obj_width_in_frame1[0]-centerx)*lCamSlopePerPixel, (obj_width_in_frame1[1]-centery)*lCamSlopePerPixel, 1)
             rCamreldir = vector((obj_width_in_frame0[0]-centerx)*rCamSlopePerPixel, (obj_width_in_frame0[1]-centery)*rCamSlopePerPixel, 1)
-            lCamreldir = vector((obj_width_in_frame1[0]-centerx)*rCamSlopePerPixel, (obj_width_in_frame1[1]-centery)q*rCamSlopePerPixel, 1)
+
 
             rCamfa = posToFrame(rCamreldir)
             rCamfa.outerAngle = rCamfa.outerAngle + rCamTilt
@@ -256,6 +257,7 @@ while True:
             print(lCamDirection)
 
             target = findIntersection(rCamPos, arrayToVector(rCamPos.getArray()+rCamDirection.getArray()), lCamPos, arrayToVector(lCamPos.getArray()+lCamDirection.getArray()))
+            print(target)
             rotateToFireAtPosition(target)
     cv2.imshow("Right",frame0)
     cv2.imshow("Left",frame1)
