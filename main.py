@@ -320,10 +320,10 @@ while True:
             lCamfa = posToFrame(lCamreldir)
             lCamfa.outerAngle = lCamfa.outerAngle + lCamTilt
             lCamDirection = frameToPos(lCamfa)
-            print("Right Cam Direction:" + str(lCamDirection))
+            print("Left Cam Direction:" + str(lCamDirection))
 
             target = findIntersection(rCamPos, arrayToVector(rCamPos.getArray()+rCamDirection.getArray()), lCamPos, arrayToVector(lCamPos.getArray()+lCamDirection.getArray()))
-            print(target)
+            print("Target: " + str(target))
             rotateToFireAtPosition(target)
     cv2.imshow("Right",frame0)
     cv2.imshow("Left",frame1)
