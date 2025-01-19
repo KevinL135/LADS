@@ -4,6 +4,10 @@ from numpy import array, cross
 from numpy.linalg import solve, norm
 from picamera2 import Picamera2
 import cv2
+import RPi.GPIO as GPIO
+from RpiMotorLib import RpiMotorLib
+import time
+
 #import imagedetection
 
 #motor setup
@@ -11,7 +15,7 @@ import cv2
 direction= 8 # Direction (DIR) GPIO Pin
 step = 11 # Step GPIO Pin
 EN_pin = 7 # enable pin (LOW to enable)
-
+ 
 dir2 = 27
 step2 = 17
 en2 = 22
@@ -20,7 +24,7 @@ en2 = 22
 outerMotor = RpiMotorLib.A4988Nema(direction, step, (21,21,21), "DRV8825")
 GPIO.setup(EN_pin,GPIO.OUT) # set enable pin as output
 
-innterMotor = RpiMotorLib.A4988Nema(dir2, step2, (21,21,21), "DRV8825")
+innerMotor = RpiMotorLib.A4988Nema(dir2, step2, (21,21,21), "DRV8825")
 GPIO.setup(en2,GPIO.OUT) # set enable pin as output
 
 GPIO.output(EN_pin,GPIO.LOW) # pull enable to low to enable motor
@@ -151,6 +155,7 @@ def findIntersection(A0: vector, A1: vector, B0: vector, B1: vector):
 def rotateToAngle(fAngle: frameAngle):
   # if (fAngle.innerAngle > maxLeft or fAngle.innerAngle < maxRight):
   #   raise Exception("Out of bounds")
+  global currentAngle
   targetOuterSteps = round(fAngle.outerAngle/stepAngle)
   outerStepAngle = targetOuterSteps*stepAngle
   targetInnerSteps = round(fAngle.innerAngle/stepAngle)
@@ -167,16 +172,15 @@ def rotateToAngle(fAngle: frameAngle):
                          deltaOuterSteps, # number of steps
                         .0005, # step delay [sec]
                          False, # True = print verbose output 
-                         .005) # initial delay [sec]
+                         0) # initial delay [sec]
 
   innerMotor.motor_go(False, # False=Clockwise, True=Counterclockwise
                          "Full" , # Step type (Full,Half,1/4,1/8,1/16,1/32)
                          deltaInnerSteps, # number of steps
                         .0005, # step delay [sec]
                          False, # True = print verbose output 
-                         .005) # initial delay [sec]
+                         0) # initial delay [sec]
   
-  global currentAngle
   currentAngle = frameAngle(outerStepAngle, innerStepAngle) 
   print("Rotated to <" + str(currentAngle.outerAngle) + ", " + str(currentAngle.innerAngle) + ">")
 
