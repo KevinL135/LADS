@@ -312,7 +312,6 @@ while True:
             lCamreldir = vector((obj_width_in_frame1[0]-centerx)*lCamSlopePerPixel, (-(obj_width_in_frame1[1]-centery))*lCamSlopePerPixel, 1)
             rCamreldir = vector((obj_width_in_frame0[0]-centerx)*rCamSlopePerPixel, (-(obj_width_in_frame0[1]-centery))*rCamSlopePerPixel, 1)
 
-<<<<<<< Updated upstream
 
             rCamfa = posToFrame(rCamreldir)
             rCamfa.outerAngle = rCamfa.outerAngle + rCamTilt
@@ -335,11 +334,9 @@ while True:
         break
 
 cv2.destroyAllWindows()
-=======
 target = findIntersection(rCamPos, arrayToVector(rCamPos.getArray()+rCamDirection.getArray()), lCamPos, arrayToVector(lCamPos.getArray()+lCamDirection.getArray()))
 
 rotateToFireAtPosition(target)
->>>>>>> Stashed changes
 
 
 #Tests 

@@ -38,10 +38,7 @@ def obj_data(img):
      return obj_pos
     
 # while True:
-<<<<<<< Updated upstream
-=======
 #     print("yo")
->>>>>>> Stashed changes
 #     width = 800
 #     height= 600
 #     
@@ -75,13 +72,10 @@ def obj_data(img):
 #     cv2.imshow("Left",frame1)
 #     if cv2.waitKey(1)&0xFF==27:
 #         break
-<<<<<<< Updated upstream
 
 cv2.destroyAllWindows()
-=======
 # cap.release()
 # cv2.destroyAllWindows()
->>>>>>> Stashed changes
 
 def camerasGetTargetPixel():
 
